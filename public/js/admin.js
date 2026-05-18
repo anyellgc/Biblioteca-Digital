@@ -1,60 +1,147 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => { 
     const formSubir = document.getElementById('formSubirLibro');
-    const tablaCuerpo = document.querySelector('.admin-table tbody');
-    const totalLibrosLabel = document.querySelector('.stat-num');
+    const tablaCuerpo = document.getElementById('tablaInventarioCuerpo');
+    const totalLibrosLabel = document.getElementById('totalLibrosContador');
 
     // --- 1. FUNCIÓN PARA CARGAR EL INVENTARIO DESDE MONGO ---
     const cargarInventario = async () => {
         try {
-            // Petición a tu ruta GET definida en el servidor
             const response = await fetch('/api/libros/todos');
             const libros = await response.json();
             
-            tablaCuerpo.innerHTML = ''; 
+            // Limpieza del contenedor eliminando los hijos actuales uno a uno
+            while (tablaCuerpo.firstChild) {
+                tablaCuerpo.removeChild(tablaCuerpo.firstChild);
+            }
 
+            // Construcción celda por celda usando nodos puros del DOM
             libros.forEach((libro) => {
                 const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${libro.titulo}</td>
-                    <td><span class="badge">${libro.categoria || 'General'}</span></td>
-                    <td>
-                        <button class="action-btn edit" data-id="${libro._id}"><i class="fa-solid fa-pen"></i></button>
-                        <button class="action-btn delete" data-id="${libro._id}"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
+
+                // Celda 1: Título del libro
+                const celdaTitulo = document.createElement('td');
+                celdaTitulo.textContent = libro.titulo;
+                fila.appendChild(celdaTitulo);
+
+                // Celda 2: Categoría con su estructura de Badge nativa segura
+                const celdaCategoria = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.classList.add('badge');
+                
+                // Normalizamos el nombre de la clase para evitar fallos por espacios o mayúsculas
+                let categoriaTexto = libro.categoria || 'General';
+                let claseLimpia = categoriaTexto.toLowerCase().replace(/\s+/g, '-');
+                
+                badge.classList.add(claseLimpia);
+                badge.textContent = categoriaTexto;
+                celdaCategoria.appendChild(badge);
+                fila.appendChild(celdaCategoria);
+
+                // Celda 3: Acciones (Botones con sus clases css e iconos correspondientes)
+                const celdaAcciones = document.createElement('td');
+
+                // Botón Editar
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'action-btn edit';
+                btnEdit.setAttribute('data-id', libro._id);
+                const iconoEdit = document.createElement('i');
+                iconoEdit.className = 'fa-solid fa-pen';
+                btnEdit.appendChild(iconoEdit);
+
+                // Botón Eliminar
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'action-btn delete';
+                btnDelete.setAttribute('data-id', libro._id);
+                const iconoDelete = document.createElement('i');
+                iconoDelete.className = 'fa-solid fa-trash';
+                btnDelete.appendChild(iconoDelete);
+
+                // Agregar ambos botones a la celda de acciones
+                celdaAcciones.appendChild(btnEdit);
+                celdaAcciones.appendChild(btnDelete);
+                fila.appendChild(celdaAcciones);
+
+                // Adjuntar la fila completa construida al cuerpo de la tabla
                 tablaCuerpo.appendChild(fila);
             });
 
-            if (totalLibrosLabel) totalLibrosLabel.textContent = libros.length;
+            // Actualizar la caja superior del contador de Libros Totales con tus datos reales
+            if (totalLibrosLabel) {
+                totalLibrosLabel.textContent = libros.length;
+            }
         } catch (error) {
-            console.error("Error al cargar inventario:", error);
+            console.error("Error al sincronizar el inventario desde la Base de Datos:", error);
         }
     };
 
+    // --- 2. MANEJADOR DE CLICKS PARA ACCIONES (ELIMINAR Y EDITAR) ---
     tablaCuerpo.addEventListener('click', async (e) => {
         const btnDelete = e.target.closest('.delete');
+        const btnEdit = e.target.closest('.edit');
         
+        // ACCIÓN: ELIMINAR LIBRO
         if (btnDelete) {
-            const id = btnDelete.dataset.id; // ID de MongoDB (_id)
+            const id = btnDelete.dataset.id; 
             if (confirm('¿Estás seguro de eliminar este libro de la base de datos?')) {
                 try {
-                    // Nota: Necesitarías crear esta ruta DELETE en tu server.js
                     const response = await fetch(`/api/libros/eliminar/${id}`, { method: 'DELETE' });
+                    const data = await response.json();
+
                     if (response.ok) {
-                        alert("Libro eliminado");
-                        cargarInventario();
+                        alert("✅ " + data.mensaje);
+                        cargarInventario(); 
+                    } else {
+                        alert("❌ Error: " + data.mensaje);
                     }
                 } catch (error) {
-                    alert("Error al intentar eliminar");
+                    console.error("Error al eliminar:", error);
+                    alert("❌ Error al intentar eliminar el registro");
                 }
+            }
+        }
+
+        // ACCIÓN: EDITAR LIBRO
+        if (btnEdit) {
+            const id = btnEdit.dataset.id;
+            const fila = btnEdit.closest('tr');
+            const tituloActual = fila.cells[0].textContent;
+            const categoriaActual = fila.querySelector('.badge').textContent;
+
+            const nuevoTitulo = prompt("Modificar Título del Libro:", tituloActual);
+            if (nuevoTitulo === null) return; 
+
+            const nuevaCategoria = prompt("Modificar Categoría:", categoriaActual);
+            if (nuevaCategoria === null) return;
+
+            try {
+                const response = await fetch(`/api/libros/editar/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        titulo: nuevoTitulo,
+                        categoria: nuevaCategoria
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("✅ " + data.mensaje);
+                    cargarInventario(); 
+                } else {
+                    alert("❌ Error: " + data.mensaje);
+                }
+            } catch (error) {
+                console.error("Error al editar:", error);
+                alert("❌ Error al intentar actualizar los datos");
             }
         }
     });
 
+    // --- 3. FORMULARIO PARA GUARDAR NUEVOS LIBROS ---
     formSubir.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Usamos FormData porque hay un archivo (PDF) involucrado
         const formData = new FormData();
         formData.append('titulo', document.getElementById('titulo').value);
         formData.append('autor', document.getElementById('autor').value);
@@ -68,10 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Ruta de tu servidor Express
             const response = await fetch('/api/libros/subir', {
                 method: 'POST',
-                body: formData // No enviamos headers de JSON, el navegador pone el Boundary de Multer solo
+                body: formData 
             });
 
             const data = await response.json();
@@ -79,16 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 alert("✅ " + data.mensaje);
                 formSubir.reset();
-                cargarInventario(); // Recarga la tabla para ver el nuevo libro
+                cargarInventario(); 
             } else {
                 alert("❌ Error: " + data.mensaje);
             }
         } catch (error) {
-            console.error("Error en la petición:", error);
-            alert("❌ No se pudo conectar con el servidor de MongoDB");
+            console.error("Error en la petición de subida:", error);
+            alert("❌ No se pudo conectar con el servidor backend");
         }
     });
 
-    // Carga inicial
+    // Carga automática inicial al abrir la página
     cargarInventario();
 });

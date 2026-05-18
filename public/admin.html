@@ -22,7 +22,7 @@
             <div class="stat-box">
                 <i class="fa-solid fa-book"></i>
                 <div>
-                    <p class="stat-num">124</p>
+                    <p class="stat-num" id="totalLibrosContador">0</p>
                     <p class="stat-label">Libros Totales</p>
                 </div>
             </div>
@@ -57,11 +57,11 @@
                     <div class="input-group">
                         <label>Categoría</label>
                         <select id="categoria" class="custom-input">
-                            <option value="literatura">Literatura</option>
-                            <option value="tecnologia">Tecnología</option>
-                            <option value="ciencia">Ciencia</option>
-                            <option value="historia">Historia</option>
-                            <option value="ciencia Ficción">Ciencia Ficción</option>
+                            <option value="Literatura">Literatura</option>
+                            <option value="Tecnología">Tecnología</option>
+                            <option value="Ciencia">Ciencia</option>
+                            <option value="Historia">Historia</option>
+                            <option value="Ciencia Ficción">Ciencia Ficción</option>
                             <option value="Psicología">Psicología</option>
                             <option value="Romance">Romance</option>
                         </select>
@@ -93,24 +93,8 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Don Quijote</td>
-                                <td><span class="badge">Clásicos</span></td>
-                                <td>
-                                    <button class="action-btn edit"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Clean Code</td>
-                                <td><span class="badge">Sistemas</span></td>
-                                <td>
-                                    <button class="action-btn edit"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="tablaInventarioCuerpo">
+                            </tbody>
                     </table>
                 </div>
             </section>

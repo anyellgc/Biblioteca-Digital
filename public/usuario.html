@@ -1,36 +1,63 @@
+<!-- usuario.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Biblioteca | DreamLibrary</title>
+
     <link rel="stylesheet" href="css/usuario.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">DREAM<span>LIBRARY</span></div>
-            
+
+            <div class="logo">
+                DREAM<span>LIBRARY</span>
+            </div>
+
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="busqueda" placeholder="Buscar por título, autor o categoría...">
+
+                <input
+                    type="text"
+                    id="busqueda"
+                    placeholder="Buscar por título, autor o categoría..."
+                >
             </div>
 
             <div class="nav-user-info">
-                <span class="user-name"><i class="fa-solid fa-circle-user"></i> Lector</span>
-                <a href="index.html" class="btn-logout">Salir</a>
+                <span class="user-name">
+                    <i class="fa-solid fa-circle-user"></i>
+                    Lector
+                </span>
+
+                <a href="index.html" class="btn-logout">
+                    Salir
+                </a>
             </div>
+
         </div>
     </nav>
 
+    <!-- CONTENIDO -->
     <main class="main-content">
+
         <header class="user-header">
+
             <div class="welcome-box">
                 <h1>Explorar Biblioteca</h1>
-                <p>Descubre nuevas historias y expande tu conocimiento hoy.</p>
+
+                <p>
+                    Descubre nuevas historias y expande tu conocimiento hoy.
+                </p>
             </div>
+
             <div class="filter-tags">
                 <span class="tag active">Todos</span>
                 <span class="tag">Tecnología</span>
@@ -41,34 +68,183 @@
                 <span class="tag">Psicología</span>
                 <span class="tag">Romance</span>
             </div>
+
         </header>
 
+        <!-- LIBROS -->
         <section id="contenedorLibros" class="books-grid">
-            <div class="book-card">
-                <div class="book-cover">
-                    <img src="https://via.placeholder.com/150x220" alt="Portada">
-                    <div class="book-badge">PDF</div>
-                </div>
-                <div class="book-info">
-                    <h3>Título del Libro</h3>
-                    <p class="author">Autor del Libro</p>
-                    <p class="category">Tecnología</p>
-                    <a href="#" class="btn-read">Leer ahora <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
+
             <div class="loader-container">
                 <div class="spinner"></div>
                 <p>Sincronizando estantería...</p>
             </div>
+
         </section>
+
     </main>
 
+    <!-- MODAL -->
+    <div id="modalDetalleLibro" class="modal-container">
+
+        <div class="modal-content-book">
+
+            <button class="close-book-btn" id="btnCerrarDetalle">
+                &times;
+            </button>
+
+            <div class="book-detail-layout">
+
+                <!-- IZQUIERDA -->
+                <div class="book-detail-left">
+
+                    <img
+                        id="modalPortada"
+                        src=""
+                        alt="Portada del libro"
+                    >
+
+                </div>
+
+                <!-- DERECHA -->
+                <div class="book-detail-right">
+
+                    <span
+                        id="modalCategoria"
+                        class="book-detail-tag"
+                    >
+                        Categoría
+                    </span>
+
+                    <h2 id="modalTitulo">
+                        Título
+                    </h2>
+
+                    <p class="book-detail-author">
+                        Por:
+                        <span id="modalAutor">
+                            Autor
+                        </span>
+                    </p>
+
+                    <!-- ESTRELLAS -->
+                    <div class="user-rating-system">
+
+                        <i class="fa-solid fa-star star-interactive"
+                           data-value="1"></i>
+
+                        <i class="fa-solid fa-star star-interactive"
+                           data-value="2"></i>
+
+                        <i class="fa-solid fa-star star-interactive"
+                           data-value="3"></i>
+
+                        <i class="fa-solid fa-star star-interactive"
+                           data-value="4"></i>
+
+                        <i class="fa-solid fa-star star-interactive"
+                           data-value="5"></i>
+
+                        <span class="rating-text-status">
+                            Selecciona una puntuación
+                        </span>
+
+                    </div>
+
+                    <!-- INFO -->
+                    <div class="book-meta-info">
+
+                        <p>
+                            <strong>Idioma:</strong>
+                            <span id="modalIdioma">Español</span>
+                        </p>
+
+                        <p>
+                            <strong>Formato:</strong>
+                            PDF Digital
+                        </p>
+
+                    </div>
+
+                    <hr class="divider-modal">
+
+                    <!-- SINOPSIS -->
+                    <h3>Sinopsis / Reseña</h3>
+
+                    <p id="modalDescripcion"
+                       class="book-synopsis">
+                        Cargando...
+                    </p>
+
+                    <!-- COMENTARIOS -->
+                    <div class="comments-section-container">
+
+                        <h3>Opiniones de lectores</h3>
+
+                        <div
+                            id="contenedorComentarios"
+                            class="comments-display-box"
+                        >
+
+                            <p class="no-comments-fallback">
+                                Aún no hay comentarios.
+                            </p>
+
+                        </div>
+
+                        <div class="comment-input-wrapper">
+
+                            <input
+                                type="text"
+                                id="inputComentario"
+                                placeholder="Escribe tu reseña..."
+                            >
+
+                            <button id="btnEnviarComentario">
+                                Publicar
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTÓN -->
+                    <div class="modal-actions-wrapper">
+
+                        <a
+                            id="btnLectorFinal"
+                            href="#"
+                            target="_blank"
+                            class="btn-start-reading"
+                        >
+
+                            <i class="fa-solid fa-book-open"></i>
+
+                            Comenzar Lectura
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
     <footer class="main-footer-user">
+
         <div class="footer-line"></div>
-        <p>© 2026 DreamLibrary | Tu espacio de lectura digital</p>
+
+        <p>
+            © 2026 DreamLibrary | Tu espacio de lectura digital
+        </p>
+
     </footer>
 
     <script src="js/usuario.js"></script>
+
 </body>
 </html>
